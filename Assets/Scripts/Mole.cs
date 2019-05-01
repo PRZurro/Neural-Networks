@@ -36,9 +36,18 @@ public class Mole : MonoBehaviour
         m_position = transform.position; // Cambiar al pivote 
     }
 
+    private Animator m_anim;
     void Start()
     {
-        
+        m_anim = GetComponent<Animator>();
+    }
+
+    void Hide() {
+        m_anim.SetBool("isHide", true);
+    }
+
+    void Unhide(Hats hat, bool isShainy) {
+        m_anim.SetBool("isHide", false);
     }
 
     // Update is called once per frame
