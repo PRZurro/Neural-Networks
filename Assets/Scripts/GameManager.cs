@@ -10,8 +10,8 @@ public class GameManager : MonoBehaviour
     GameSettings m_gameSettings;
 
     List<Mole> m_moles;
-    List<int> m_availableMoles;
-    List<int> m_occupiedMoles;
+    List<byte> m_availableMoles;
+    List<byte> m_occupiedMoles;
 
     int m_score;
 
@@ -19,12 +19,23 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        m_score = 0;
-    }
+        m_moles = new List<Mole>();
+        m_availableMoles = new List<byte>();
+        m_occupiedMoles = new List<byte>();
 
-    void Start()
-    {
-        
+        m_score = 0;
+
+        Transform molesParent = transform.GetChild(0);
+
+        byte i = 0;
+
+        foreach (Transform moleTr in molesParent)
+        {
+            m_moles.Add(moleTr.GetComponent<Mole>());
+            m_moles[i].Initialize(i, GetHidingMole, m_gameSettings.moleSettings[0]);
+
+            i++;
+        }
     }
 
     void Update()
@@ -36,13 +47,13 @@ public class GameManager : MonoBehaviour
 
     public void HitMole(Mole mole)
     {
-        //m_hammer.Hit(mole.position());
+        m_hammer.HitOn(mole.position());
     }
 
-    public void HitMole(int moleID)
+    public void HitMole(byte moleID)
     {
         Mole mole = GetMole(moleID);
-        //m_hammer.Hit(mole.position());
+        m_hammer.HitOn(mole.position());
     }
 
     void ManageMoleAvailability()
@@ -68,17 +79,17 @@ public class GameManager : MonoBehaviour
 
     //////////////////////////////-GETTERS-////////////////////////////
 
-    public Mole GetMole(int moleID)
+    public Mole GetMole(byte moleID)
     {
         return m_moles[moleID];
     }
 
-    public List<int> AvailableMoles()
+    public List<byte> AvailableMoles()
     {
         return m_availableMoles;
     }
 
-    public List<int> OccuppiedMoles()
+    public List<byte> OccuppiedMoles()
     {
         return m_occupiedMoles;
     }
@@ -87,13 +98,19 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < m_availableMoles.Count && i < nMoles; i++)
         {
-            UnhideMole(Random.Range(0, m_availableMoles.Count));
+            UnhideMole((byte)Random.Range(0, m_availableMoles.Count));
         }
     }
 
-    void UnhideMole(int moleID)
+    void GetHidingMole(byte moleID)
     {
-        m_availableMoles.RemoveAt(moleID);
+        m_occupiedMoles.Remove(moleID);
+        m_availableMoles.Add(moleID);
+    }
+
+    void UnhideMole(byte moleID)
+    {
+        m_availableMoles.Remove(moleID);
         m_occupiedMoles.Add(moleID);
 
         m_moles[moleID].Unhide(m_gameSettings.moleSettings, m_gameSettings.moleSettingsProbabilities);
