@@ -3,18 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public enum MoleType : byte {
+public enum MoleType : byte
+{
     NORMAL = 0,
     MEXICAN = 1,
     VIKING = 2,
     KING = 3
 }
 
-
-
 [System.Serializable]
-public struct MoleSettings {
+public struct MoleSettings
+{
     public MoleType moleType;
     public int score;
 
@@ -25,51 +24,107 @@ public struct MoleSettings {
     public float timeToHide;
 }
 
-public class Mole : MonoBehaviour {
+public class Mole : MonoBehaviour
+{
+    public delegate void Communication(byte ID);
+
+    public Communication OnHide { get; set; }
+    public byte ID { get; set; }
 
     public GameObject Hammer;
 
-    MoleSettings settings;
+    MoleSettings m_settings;
 
     bool m_isAvailable;
 
     Vector3 m_position; // Hit target of the hammer
 
-    private Animator m_anim;
+    Animator m_anim;
 
-    void Awake() {
+    List<int> m_accumulatedProbabilities;
+
+    void Awake()
+    {
+        m_accumulatedProbabilities = new List<int>();
+
         m_isAvailable = false;
-        m_position = transform.GetChild(2).position; // Cambiar al pivote 
-        transform.GetChild(1).GetComponent<CollisionDetector>().SetCollisionCommunication(ReciveCollision);
-    }
-
-    void ReciveCollision(Collision other) {
-        Debug.Log(other.gameObject.name + " is Hit " + this.gameObject.name);
-
-    }
-
-    
-    void Start() {
+        m_position = transform.GetChild(2).position; // Change to pivot
+        transform.GetChild(1).GetComponent<CollisionDetector>().SetCollisionCommunication(RecieveCollision);
+        ID = 255;
         m_anim = GetComponent<Animator>();
-
-        //Hammer.GetComponent<Hammer>().Hit(m_position);
     }
 
-    void Hide() {
+    public void Initialize(byte id, Communication onHide, MoleSettings defaultSettings)
+    {
+        ID = id;
+        OnHide = onHide;
+        SetSettings(defaultSettings);
+    }
+
+    public void Hide()
+    {
         m_anim.SetBool("isHide", true);
+        m_isAvailable = true;
+        OnHide(ID);
     }
 
-    void Unhide(List<MoleSettings> settingsList, List<int> itemProbability) {
+    public void Unhide(List<MoleSettings> settingsList, List<int> itemProbability)
+    {
+        if(itemProbability.Count != m_accumulatedProbabilities.Count)
+        {
+            FillAccumulatedSequenceIn(itemProbability, m_accumulatedProbabilities);
+        }
+
+        int maxProbability = m_accumulatedProbabilities[m_accumulatedProbabilities.Count - 1];
+        int nRandom = Random.Range(0, maxProbability);
+        int previousAccumulatedProbability = 0, currentIndex = 0; 
+
+        foreach(int accumulatedProbability in m_accumulatedProbabilities)
+        {
+            if(nRandom >= previousAccumulatedProbability && nRandom <= accumulatedProbability)
+            {
+                break;
+            }
+            else
+            {
+                previousAccumulatedProbability = accumulatedProbability;
+            }
+
+            currentIndex++;
+        }
+
+        SetSettings(settingsList[currentIndex]);
+        
         m_anim.SetBool("isHide", false);
-
-
     }
 
-    void Update() {
 
+    public void SetSettings(MoleSettings settings)
+    {
+        m_settings = settings;
+
+        //..............................
+        // Change hat, etc
     }
 
-    public Vector3 position() {
+    private void FillAccumulatedSequenceIn(List<int> numberSequence, List<int> toFill)
+    {
+        toFill.Clear();
+        int accumulatedSum = 0;
+        foreach (int probability in numberSequence)
+        {
+            accumulatedSum += probability;
+            toFill.Add(accumulatedSum);
+        }
+    }
+
+    void RecieveCollision()
+    {
+        Hide();
+    }
+
+    public Vector3 position()
+    {
         return m_position;
     }
 }
