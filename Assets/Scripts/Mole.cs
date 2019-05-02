@@ -6,9 +6,13 @@ using UnityEngine;
 public enum MoleType : byte
 {
     NORMAL = 0,
-    MEXICAN = 1,
-    VIKING = 2,
-    KING = 3
+    EXPLORER = 1,
+    SUMERDAY = 2,
+    WIZARD = 3,
+    COWBOY = 4,
+    CROWN = 5,
+    POKEMONMASTER = 6,
+    PROPELLET = 7
 }
 
 [System.Serializable]
@@ -32,6 +36,8 @@ public class Mole : MonoBehaviour
     public byte ID { get; set; }
 
     public GameObject Hammer;
+    public Material mat_Normal;
+    public Material mat_Shiny;
 
     MoleSettings m_settings;
 
@@ -52,6 +58,17 @@ public class Mole : MonoBehaviour
         transform.GetChild(1).GetComponent<CollisionDetector>().SetCollisionCommunication(RecieveCollision);
         ID = 255;
         m_anim = GetComponent<Animator>();
+
+
+        MoleSettings sett;
+        sett.moleType = MoleType.PROPELLET;
+        sett.score = 50;
+        sett.shinyProbability = 0.9f;
+        sett.timeToHide = 1;
+
+        SetSettings(sett);
+
+
     }
 
     public void Initialize(byte id, Communication onHide, MoleSettings defaultSettings)
@@ -101,7 +118,23 @@ public class Mole : MonoBehaviour
 
     public void SetSettings(MoleSettings settings)
     {
+        Debug.Log((int)settings.moleType);
+        if (m_settings.moleType != MoleType.NORMAL) {
+            transform.GetChild(1).GetChild(1).GetChild((int)m_settings.moleType - 1).gameObject.SetActive(false);
+        }
+        
+
         m_settings = settings;
+        transform.GetChild(1).GetChild(1).GetChild((int)settings.moleType - 1).gameObject.SetActive(true);
+
+        if (Random.Range(0.0f, 1.0f) <= m_settings.shinyProbability) {
+            //Material mat = (Material)Resources.Load("Assets/Models/Pokemon/Diglet_v2/ShyniMouth.mat", typeof(Material));
+            transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = mat_Shiny;
+        }
+        else {
+            transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = mat_Normal;
+        }
+  
 
         //..............................
         // Change hat, etc
