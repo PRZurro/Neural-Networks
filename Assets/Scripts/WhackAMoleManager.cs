@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WhackAMoleManager : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class WhackAMoleManager : MonoBehaviour
 
     [SerializeField]
     bool m_humanPlayable = false;
+
+    [SerializeField]
+    Text m_scoreText;
 
     List<Mole> m_moles;
     List<byte> m_availableMoles;
@@ -146,6 +150,7 @@ public class WhackAMoleManager : MonoBehaviour
         {
             Debug.Log("eeeey");
             m_score += m_moles[moleID].score();
+            m_scoreText.text = m_score.ToString();
         }
 
         StartCoroutine(MakeMoleAvailable(moleID, 0.5f));

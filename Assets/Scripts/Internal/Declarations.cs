@@ -26,6 +26,6 @@ public struct MoleSettings
     [Range(0.0f, 1.0f)]
     public float shinyProbability;
 
-    [Range(0.5f, 5.0f)]
+    [Range(0.5f, 25.0f)]
     public float timeToHide;
 }
