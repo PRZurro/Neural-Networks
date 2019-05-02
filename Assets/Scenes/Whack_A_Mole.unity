@@ -377,6 +377,11 @@ PrefabInstance:
       propertyPath: mat_Shiny
       value: 
       objectReference: {fileID: 2100000, guid: 54935c6b99cbbb64185d19864d300f5c, type: 2}
+    - target: {fileID: 3236427843887333341, guid: 473b1497c3b21ba41a67529f5f9f95b1,
+        type: 3}
+      propertyPath: m_normalMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 9dc5687571756664fbb1882e10ecc699, type: 2}
     - target: {fileID: 4464588433752335266, guid: 473b1497c3b21ba41a67529f5f9f95b1,
         type: 3}
       propertyPath: m_TagString

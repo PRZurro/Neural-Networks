@@ -122,7 +122,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6383150cb830bb047a9694043a72f449, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Hammer: {fileID: 0}
+  m_normalMaterial: {fileID: 2100000, guid: 9dc5687571756664fbb1882e10ecc699, type: 2}
+  m_shinyMaterial: {fileID: 2100000, guid: 54935c6b99cbbb64185d19864d300f5c, type: 2}
 --- !u!1 &6751322516985212088
 GameObject:
   m_ObjectHideFlags: 0
@@ -167,16 +168,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7215382291774509466}
     m_Modifications:
-    - target: {fileID: 2301878731212177815, guid: c9d0ae9f86a8c7745a2ee9f5277c7f20,
-        type: 3}
-      propertyPath: m_Name
-      value: Wizard
-      objectReference: {fileID: 0}
-    - target: {fileID: 2301878731212177815, guid: c9d0ae9f86a8c7745a2ee9f5277c7f20,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2150878537335993505, guid: c9d0ae9f86a8c7745a2ee9f5277c7f20,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -247,6 +238,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.6666667
       objectReference: {fileID: 0}
+    - target: {fileID: 2301878731212177815, guid: c9d0ae9f86a8c7745a2ee9f5277c7f20,
+        type: 3}
+      propertyPath: m_Name
+      value: Wizard
+      objectReference: {fileID: 0}
+    - target: {fileID: 2301878731212177815, guid: c9d0ae9f86a8c7745a2ee9f5277c7f20,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c9d0ae9f86a8c7745a2ee9f5277c7f20, type: 3}
 --- !u!4 &599756278774455623 stripped
@@ -262,16 +263,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7215382291774509466}
     m_Modifications:
-    - target: {fileID: 1513378384238794136, guid: 2d6ff210b1cd4764fa16ba5e60f1b59d,
-        type: 3}
-      propertyPath: m_Name
-      value: Crown
-      objectReference: {fileID: 0}
-    - target: {fileID: 1513378384238794136, guid: 2d6ff210b1cd4764fa16ba5e60f1b59d,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2547841428148987787, guid: 2d6ff210b1cd4764fa16ba5e60f1b59d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -342,6 +333,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.6666667
       objectReference: {fileID: 0}
+    - target: {fileID: 1513378384238794136, guid: 2d6ff210b1cd4764fa16ba5e60f1b59d,
+        type: 3}
+      propertyPath: m_Name
+      value: Crown
+      objectReference: {fileID: 0}
+    - target: {fileID: 1513378384238794136, guid: 2d6ff210b1cd4764fa16ba5e60f1b59d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d6ff210b1cd4764fa16ba5e60f1b59d, type: 3}
 --- !u!4 &1116364067526669528 stripped
@@ -357,16 +358,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5680317384336489647}
     m_Modifications:
-    - target: {fileID: -927199367670048503, guid: b832714228abae7409c3695598a4e76c,
-        type: 3}
-      propertyPath: m_Name
-      value: Ground
-      objectReference: {fileID: 0}
-    - target: {fileID: -927199367670048503, guid: b832714228abae7409c3695598a4e76c,
-        type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: b832714228abae7409c3695598a4e76c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -437,6 +428,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.75
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: b832714228abae7409c3695598a4e76c,
+        type: 3}
+      propertyPath: m_Name
+      value: Ground
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: b832714228abae7409c3695598a4e76c,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b832714228abae7409c3695598a4e76c, type: 3}
 --- !u!4 &841678754415791627 stripped
@@ -452,26 +453,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5680317384336489647}
     m_Modifications:
-    - target: {fileID: -927199367670048503, guid: 6998e4ad071a9ba4790d1f31bd7595ba,
-        type: 3}
-      propertyPath: m_Name
-      value: Face
-      objectReference: {fileID: 0}
-    - target: {fileID: -927199367670048503, guid: 6998e4ad071a9ba4790d1f31bd7595ba,
-        type: 3}
-      propertyPath: m_TagString
-      value: Enemy
-      objectReference: {fileID: 0}
-    - target: {fileID: -927199367670048503, guid: 6998e4ad071a9ba4790d1f31bd7595ba,
-        type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 4107563175076814000, guid: 6998e4ad071a9ba4790d1f31bd7595ba,
-        type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 6998e4ad071a9ba4790d1f31bd7595ba,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -542,6 +523,26 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.75
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 6998e4ad071a9ba4790d1f31bd7595ba,
+        type: 3}
+      propertyPath: m_Name
+      value: Face
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 6998e4ad071a9ba4790d1f31bd7595ba,
+        type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 6998e4ad071a9ba4790d1f31bd7595ba,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4107563175076814000, guid: 6998e4ad071a9ba4790d1f31bd7595ba,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 4091380175172127247, guid: 6998e4ad071a9ba4790d1f31bd7595ba,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -568,16 +569,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7215382291774509466}
     m_Modifications:
-    - target: {fileID: 3574050756179017031, guid: 189c91865e8d8f847a6e1c5ae96f1bd3,
-        type: 3}
-      propertyPath: m_Name
-      value: Cowboy
-      objectReference: {fileID: 0}
-    - target: {fileID: 3574050756179017031, guid: 189c91865e8d8f847a6e1c5ae96f1bd3,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 559235678266904404, guid: 189c91865e8d8f847a6e1c5ae96f1bd3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -648,6 +639,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.6666668
       objectReference: {fileID: 0}
+    - target: {fileID: 3574050756179017031, guid: 189c91865e8d8f847a6e1c5ae96f1bd3,
+        type: 3}
+      propertyPath: m_Name
+      value: Cowboy
+      objectReference: {fileID: 0}
+    - target: {fileID: 3574050756179017031, guid: 189c91865e8d8f847a6e1c5ae96f1bd3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 189c91865e8d8f847a6e1c5ae96f1bd3, type: 3}
 --- !u!4 &5852310456790285953 stripped
@@ -663,16 +664,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7215382291774509466}
     m_Modifications:
-    - target: {fileID: 3262562494099618341, guid: d0958a2514af27947a38cb50ef62b52a,
-        type: 3}
-      propertyPath: m_Name
-      value: SteamPunkHat
-      objectReference: {fileID: 0}
-    - target: {fileID: 3262562494099618341, guid: d0958a2514af27947a38cb50ef62b52a,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 370925521552693942, guid: d0958a2514af27947a38cb50ef62b52a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -743,6 +734,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.6666667
       objectReference: {fileID: 0}
+    - target: {fileID: 3262562494099618341, guid: d0958a2514af27947a38cb50ef62b52a,
+        type: 3}
+      propertyPath: m_Name
+      value: SteamPunkHat
+      objectReference: {fileID: 0}
+    - target: {fileID: 3262562494099618341, guid: d0958a2514af27947a38cb50ef62b52a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d0958a2514af27947a38cb50ef62b52a, type: 3}
 --- !u!4 &5936864321770676899 stripped
@@ -758,16 +759,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7215382291774509466}
     m_Modifications:
-    - target: {fileID: 3841063050564440046, guid: 9e8ec6c23afaf254ea7fb211e7ea6a49,
-        type: 3}
-      propertyPath: m_Name
-      value: Propeller hat
-      objectReference: {fileID: 0}
-    - target: {fileID: 3841063050564440046, guid: 9e8ec6c23afaf254ea7fb211e7ea6a49,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 222202119738064381, guid: 9e8ec6c23afaf254ea7fb211e7ea6a49,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -838,6 +829,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.6666667
       objectReference: {fileID: 0}
+    - target: {fileID: 3841063050564440046, guid: 9e8ec6c23afaf254ea7fb211e7ea6a49,
+        type: 3}
+      propertyPath: m_Name
+      value: Propeller hat
+      objectReference: {fileID: 0}
+    - target: {fileID: 3841063050564440046, guid: 9e8ec6c23afaf254ea7fb211e7ea6a49,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9e8ec6c23afaf254ea7fb211e7ea6a49, type: 3}
 --- !u!4 &8092040010607095690 stripped
@@ -853,16 +854,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7215382291774509466}
     m_Modifications:
-    - target: {fileID: 6804400294896448116, guid: 4dbc9240bcb277840b7f167cfb8dbb25,
-        type: 3}
-      propertyPath: m_Name
-      value: SundayHat
-      objectReference: {fileID: 0}
-    - target: {fileID: 6804400294896448116, guid: 4dbc9240bcb277840b7f167cfb8dbb25,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3615165156088368809, guid: 4dbc9240bcb277840b7f167cfb8dbb25,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -933,6 +924,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.6666667
       objectReference: {fileID: 0}
+    - target: {fileID: 6804400294896448116, guid: 4dbc9240bcb277840b7f167cfb8dbb25,
+        type: 3}
+      propertyPath: m_Name
+      value: SundayHat
+      objectReference: {fileID: 0}
+    - target: {fileID: 6804400294896448116, guid: 4dbc9240bcb277840b7f167cfb8dbb25,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4dbc9240bcb277840b7f167cfb8dbb25, type: 3}
 --- !u!4 &4946992633997491174 stripped
@@ -948,16 +949,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7215382291774509466}
     m_Modifications:
-    - target: {fileID: 9090564635709325275, guid: 1489d182fc3f388409e82a34ad15f325,
-        type: 3}
-      propertyPath: m_Name
-      value: PokemonMaster
-      objectReference: {fileID: 0}
-    - target: {fileID: 9090564635709325275, guid: 1489d182fc3f388409e82a34ad15f325,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5220645618430004680, guid: 1489d182fc3f388409e82a34ad15f325,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1027,6 +1018,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.6666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 9090564635709325275, guid: 1489d182fc3f388409e82a34ad15f325,
+        type: 3}
+      propertyPath: m_Name
+      value: PokemonMaster
+      objectReference: {fileID: 0}
+    - target: {fileID: 9090564635709325275, guid: 1489d182fc3f388409e82a34ad15f325,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1489d182fc3f388409e82a34ad15f325, type: 3}

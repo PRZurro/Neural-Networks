@@ -7,12 +7,12 @@ public enum MoleType : byte
 {
     NORMAL = 0,
     EXPLORER = 1,
-    SUMERDAY = 2,
+    SUMMER_DAY = 2,
     WIZARD = 3,
     COWBOY = 4,
     CROWN = 5,
-    POKEMONMASTER = 6,
-    PROPELLET = 7
+    POKEMON_MASTER = 6,
+    PROPELLER = 7
 }
 
 [System.Serializable]
@@ -35,9 +35,8 @@ public class Mole : MonoBehaviour
     public Communication OnHide { get; set; }
     public byte ID { get; set; }
 
-    public GameObject Hammer;
-    public Material mat_Normal;
-    public Material mat_Shiny;
+    [SerializeField]
+    Material m_normalMaterial, m_shinyMaterial;
 
     MoleSettings m_settings;
 
@@ -59,9 +58,8 @@ public class Mole : MonoBehaviour
         ID = 255;
         m_anim = GetComponent<Animator>();
 
-
         MoleSettings sett;
-        sett.moleType = MoleType.PROPELLET;
+        sett.moleType = MoleType.PROPELLER;
         sett.score = 50;
         sett.shinyProbability = 0.9f;
         sett.timeToHide = 1;
@@ -87,18 +85,18 @@ public class Mole : MonoBehaviour
 
     public void Unhide(List<MoleSettings> settingsList, List<int> itemProbability)
     {
-        if(itemProbability.Count != m_accumulatedProbabilities.Count)
+        if (itemProbability.Count != m_accumulatedProbabilities.Count)
         {
             FillAccumulatedSequenceIn(itemProbability, m_accumulatedProbabilities);
         }
 
         int maxProbability = m_accumulatedProbabilities[m_accumulatedProbabilities.Count - 1];
         int nRandom = Random.Range(0, maxProbability);
-        int previousAccumulatedProbability = 0, currentIndex = 0; 
+        int previousAccumulatedProbability = 0, currentIndex = 0;
 
-        foreach(int accumulatedProbability in m_accumulatedProbabilities)
+        foreach (int accumulatedProbability in m_accumulatedProbabilities)
         {
-            if(nRandom >= previousAccumulatedProbability && nRandom <= accumulatedProbability)
+            if (nRandom >= previousAccumulatedProbability && nRandom <= accumulatedProbability)
             {
                 break;
             }
@@ -111,33 +109,36 @@ public class Mole : MonoBehaviour
         }
 
         SetSettings(settingsList[currentIndex]);
-        
+
         m_anim.SetBool("isHide", false);
     }
 
 
     public void SetSettings(MoleSettings settings)
     {
-        Debug.Log((int)settings.moleType);
-        if (m_settings.moleType != MoleType.NORMAL) {
-            transform.GetChild(1).GetChild(1).GetChild((int)m_settings.moleType - 1).gameObject.SetActive(false);
-        }
-        
+        if(m_settings.moleType != settings.moleType)
+        {
+            if(m_settings.moleType != MoleType.NORMAL)
+            {
+                transform.GetChild(1).GetChild(1).GetChild((int)m_settings.moleType - 1).gameObject.SetActive(false);
+            }
+            if(settings.moleType != MoleType.NORMAL)
+            {
+                transform.GetChild(1).GetChild(1).GetChild((int)settings.moleType - 1).gameObject.SetActive(true);
+            }
 
-        m_settings = settings;
-        transform.GetChild(1).GetChild(1).GetChild((int)settings.moleType - 1).gameObject.SetActive(true);
+            m_settings = settings;
 
-        if (Random.Range(0.0f, 1.0f) <= m_settings.shinyProbability) {
-            //Material mat = (Material)Resources.Load("Assets/Models/Pokemon/Diglet_v2/ShyniMouth.mat", typeof(Material));
-            transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = mat_Shiny;
+            if (Random.Range(0.0f, 1.0f) <= m_settings.shinyProbability)
+            {
+                
+                transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = m_shinyMaterial;
+            }
+            else
+            {
+                transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = m_normalMaterial;
+            }
         }
-        else {
-            transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = mat_Normal;
-        }
-  
-
-        //..............................
-        // Change hat, etc
     }
 
     private void FillAccumulatedSequenceIn(List<int> numberSequence, List<int> toFill)
