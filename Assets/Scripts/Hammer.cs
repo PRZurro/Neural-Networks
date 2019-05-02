@@ -25,29 +25,29 @@ public class Hammer : MonoBehaviour
 
     void Hit()
     {
-        m_anim.SetBool("isHit", true);
+        m_anim.SetBool("isHitting", true);
         Invoke("GoIdle", 0.2f);
-    }
-
-    void GoIdle()
-    {
-        m_anim.SetBool("isHit", false);
-    }
-
-    void MoveTo()
-    {
-        transform.position = Vector3.MoveTowards(transform.position, m_target, MovementSpeed);
-
-        if (Vector3.Distance(transform.position, m_target) < 0.01f)
-        {
-            m_isMoving = false;
-            Hit();
-        }
     }
 
     public void HitOn(Vector3 target)
     {
         m_target = target;
         m_isMoving = true;
+    }
+
+    void GoIdle()
+    {
+        m_anim.SetBool("isHitting", false);
+    }
+
+    void MoveTo()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, m_target, MovementSpeed * Time.deltaTime);
+
+        if (Vector3.Distance(transform.position, m_target) < 0.01f)
+        {
+            m_isMoving = false;
+            Hit();
+        }
     }
 }

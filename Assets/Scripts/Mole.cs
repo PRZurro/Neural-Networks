@@ -1,90 +1,73 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MoleType : byte
-{
-    NORMAL = 0,
-    EXPLORER = 1,
-    SUMMER_DAY = 2,
-    WIZARD = 3,
-    COWBOY = 4,
-    CROWN = 5,
-    POKEMON_MASTER = 6,
-    PROPELLER = 7
-}
-
-[System.Serializable]
-public struct MoleSettings
-{
-    public MoleType moleType;
-    public int score;
-
-    [Range(0.0f, 1.0f)]
-    public float shinyProbability;
-
-    [Range(0.5f, 5.0f)]
-    public float timeToHide;
-}
-
 public class Mole : MonoBehaviour
 {
-    public delegate void Communication(byte ID);
-
     public Communication OnHide { get; set; }
+    
     public byte ID { get; set; }
 
-    [SerializeField]
-    Material m_normalMaterial, m_shinyMaterial;
-
     MoleSettings m_settings;
-
-    bool m_isAvailable;
-
     Vector3 m_position; // Hit target of the hammer
 
     Animator m_anim;
 
     List<int> m_accumulatedProbabilities;
 
+    [SerializeField]
+    Material m_normalMaterial, m_shinyMaterial;
+
+    float m_curTime, m_curTimer;
+
+    bool m_isHidden;
+
     void Awake()
     {
         m_accumulatedProbabilities = new List<int>();
 
-        m_isAvailable = false;
         m_position = transform.GetChild(2).position; // Change to pivot
         transform.GetChild(1).GetComponent<CollisionDetector>().SetCollisionCommunication(RecieveCollision);
-        ID = 255;
         m_anim = GetComponent<Animator>();
-
-        MoleSettings sett;
-        sett.moleType = MoleType.PROPELLER;
-        sett.score = 50;
-        sett.shinyProbability = 0.9f;
-        sett.timeToHide = 1;
-
-        SetSettings(sett);
-
-
     }
 
     public void Initialize(byte id, Communication onHide, MoleSettings defaultSettings)
     {
         ID = id;
         OnHide = onHide;
-        SetSettings(defaultSettings);
+        m_settings = defaultSettings;
+        ResetTimerToHide();
+        m_isHidden = true;
     }
 
-    public void Hide()
+    private void Update()
     {
-        m_anim.SetBool("isHide", true);
-        m_isAvailable = true;
-        OnHide(ID);
+        if(!m_isHidden)
+        {
+            m_curTime += Time.deltaTime;
+
+            if (m_curTime >= m_curTimer)
+            {
+                Hide();
+            }
+        }
+    }
+
+    public void Hide(bool collided = false)
+    {
+        if(!m_isHidden)
+        {
+            m_isHidden = true;
+            m_anim.SetBool("isHidden", true);
+
+            OnHide(ID, collided);
+        }
     }
 
     public void Unhide(List<MoleSettings> settingsList, List<int> itemProbability)
     {
+        m_isHidden = false;
+
         if (itemProbability.Count != m_accumulatedProbabilities.Count)
         {
             FillAccumulatedSequenceIn(itemProbability, m_accumulatedProbabilities);
@@ -110,7 +93,8 @@ public class Mole : MonoBehaviour
 
         SetSettings(settingsList[currentIndex]);
 
-        m_anim.SetBool("isHide", false);
+        m_anim.SetBool("isHidden", false);
+        ResetTimerToHide();
     }
 
 
@@ -131,7 +115,6 @@ public class Mole : MonoBehaviour
 
             if (Random.Range(0.0f, 1.0f) <= m_settings.shinyProbability)
             {
-                
                 transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = m_shinyMaterial;
             }
             else
@@ -141,24 +124,35 @@ public class Mole : MonoBehaviour
         }
     }
 
-    private void FillAccumulatedSequenceIn(List<int> numberSequence, List<int> toFill)
+    private void FillAccumulatedSequenceIn(List<int> numberSequence, List<int> listToFill)
     {
-        toFill.Clear();
+        listToFill.Clear();
         int accumulatedSum = 0;
         foreach (int probability in numberSequence)
         {
             accumulatedSum += probability;
-            toFill.Add(accumulatedSum);
+            listToFill.Add(accumulatedSum);
         }
     }
 
     void RecieveCollision()
     {
-        Hide();
+        Hide(true);
     }
 
     public Vector3 position()
     {
         return m_position;
+    }
+
+    public int score()
+    {
+        return m_settings.score;
+    }
+
+    void ResetTimerToHide()
+    {
+        m_curTime = 0.0f;
+        m_curTimer = m_settings.timeToHide;
     }
 }

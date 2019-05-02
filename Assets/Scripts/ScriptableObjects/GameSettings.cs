@@ -14,8 +14,9 @@ public class GameSettings : ScriptableObject
     [Range(1, 10)]
     public int shinyMultiplier = 2;
 
-    [Range(2.0f, 100.0f)]
-    public float hammerSpeed = 10.0f;
+    [Range(0.0f, 10.0f)]
+    public float hammerSpeed = 5.0f;
 
-    public float appearanceFrequency;
+    [Range(0.0f, 1.0f)] 
+    public float minAppearanceTime = 0.2f, maxAppearanceTime = 10.0f; // 0 is 0 seconds 1 is 10 seconds
 }
