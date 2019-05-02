@@ -9,7 +9,7 @@ using UnityEngine;
 public class GameSettings : ScriptableObject
 {
     public List<MoleSettings> moleSettings;
-    public List<int> moleSettingsProbabilities;
+    public List<int> moleSettingsProbabilities; // Would be confusing that the summation of all probabilities weren't 100
 
     [Range(1, 10)]
     public int shinyMultiplier = 2;
