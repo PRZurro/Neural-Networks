@@ -6,10 +6,6 @@ public class CollisionDetector : MonoBehaviour
 {
     public CollisionCommunication m_communication;
 
-    /// <summary>
-    /// On collision2d enter...
-    /// </summary>
-    /// <param name="collision"></param>
     void OnCollisionEnter(Collision collision)
     {
         m_communication();
