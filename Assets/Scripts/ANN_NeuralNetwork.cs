@@ -25,6 +25,15 @@ public class ANN_NeuralNetwork : MonoBehaviour {
         Debug.Log(m_hide.String());
         Debug.Log(m_output.String());
 
-        Debug.Log(m_hide.m_parentLayer.m_layerName);
+    }
+
+    void CalculateValueLayers() {
+        m_input.ObtainNeuronValues();
+        m_hide.ObtainNeuronValues();
+        m_output.ObtainNeuronValues();
+    }
+
+    void BackPropagation() {
+        //m_input
     }
 }

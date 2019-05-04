@@ -4,29 +4,35 @@ using UnityEngine;
 
 public class ANN_Layer
 {
-    public string m_layerName;
-    public int m_numberOfParentNeurons, m_numberOfNeurons, m_numberOfChildNeurons;
+    string m_layerName;
+    int m_numberOfParentNeurons, m_numberOfNeurons, m_numberOfChildNeurons;
     public ANN_Layer m_childLayer, m_parentLayer;
 
     public float[,] m_weight;
     public float[] m_bias;
 
-    public float[,] m_weightsIncrease;
-    public float[] m_neuronValues;
-    public float[] m_desiredValues;
     public float[] m_errors;
+    public float[] m_desiredValues;
+    public float[] m_neuronValues;
+
+    public float[,] m_weightsIncrease;   
     public float[] m_biasValues;
 
-    public float[,] pesosIncremento;
-    public float[] valoresNeuronas;
-    public float[] valoresDeseados;
-    public float[] errores;
-    public float[] biasValores;
+    //public float[,] pesosIncremento;
+    //public float[] valoresNeuronas;
+    //public float[] valoresDeseados;
+    //public float[] errores;
+    //public float[] biasValores;
 
     public ANN_Layer(int numberOfNeurons, string layerName)
     {
-        m_numberOfNeurons = numberOfNeurons;
         m_layerName = layerName;
+
+        m_numberOfNeurons = numberOfNeurons;
+
+        m_errors = new float[m_numberOfNeurons];
+        m_desiredValues = new float[m_numberOfNeurons];
+        m_neuronValues = new float[m_numberOfNeurons];
     }
 
     public void AddRelations(ANN_Layer parent, ANN_Layer child)
@@ -90,15 +96,74 @@ public class ANN_Layer
         }
     }
 
+    public void ObtainErrors() {
+        // if is Output Layer
+        if (m_childLayer == null) {            
+                CalculateOutputError();         
+        }
+        //if is Hide Layer
+        else if (m_parentLayer != null) {
+            CalculateHideError();
+        }
+    }
+
+    public void AdjustWeight() {
+        //If Input or Hide
+        if (m_childLayer != null) {
+            for (int i = 0; i < m_numberOfNeurons; i++) {
+                for (int j = 0; j < m_numberOfChildNeurons; j++) {
+                    // Formula de ajuste de peso
+                    float dw = Const.RATIO_APRENDIZAJE * m_childLayer.m_errors[j] * m_neuronValues[j]; 
+
+                    if (Const.USO_INERCIA) {
+                        m_weight[i, j] += dw + Const.RATIO_INERCIA * m_weightsIncrease[i, j];
+                        m_weightsIncrease[i, j] = dw;
+                    }
+                    else {
+                        m_weight[i, j] += dw;
+                    }
+                }
+            }
+            for (int j = 0; j < m_numberOfChildNeurons; j++) {
+                float dw = Const.RATIO_APRENDIZAJE * m_childLayer.m_errors[j] * m_biasValues[j];
+                m_bias[j] += dw;
+            }
+        }
+    }
+
+
     //----------------------------------------------------------------------------------------------------
     #region MathFunctions
 
-    public float Sigmoide(float x) {
+    float Sigmoide(float x) {
         return 1.0f / (1 + Mathf.Exp(-x));
     }
 
-    public float SigmoideDerived(float x) {
+    float SigmoideDerived(float x) {
         return Mathf.Exp(-x) / Mathf.Pow(1 + Mathf.Exp(-x), 2);
+    }
+
+    // Apuntes --> Computar el Error(1) 
+    float ECM_ErrorCuadraticMedium() {
+        return 5.0f;
+    }
+
+    // Apuntes --> Computar el Error(3) --> Derivada del output
+    void CalculateOutputError() {
+        for (int i = 0; i < m_numberOfNeurons; i++) {
+            m_errors[i] = (m_desiredValues[i] - m_neuronValues[i]) * m_neuronValues[i] * (1 - m_neuronValues[i]);
+        }
+    }
+
+    // Apuntes --> Computar el Error(4) --> Derivada de la capa oculta.
+    void CalculateHideError() {
+        for (int i = 0; i < m_numberOfNeurons; i++) {
+            float suma = 0;
+            for (int j = 0; j < m_numberOfChildNeurons; j++) {
+                suma += m_childLayer.m_errors[j] * m_weight[i, j];
+            }
+            m_errors[i] = suma * m_neuronValues[i] * (1 - m_neuronValues[i]);
+        }
     }
 
     #endregion
