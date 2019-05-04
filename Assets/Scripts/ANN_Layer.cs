@@ -17,6 +17,12 @@ public class ANN_Layer
     public float[] m_errors;
     public float[] m_biasValues;
 
+    public float[,] pesosIncremento;
+    public float[] valoresNeuronas;
+    public float[] valoresDeseados;
+    public float[] errores;
+    public float[] biasValores;
+
     public ANN_Layer(int numberOfNeurons, string layerName)
     {
         m_numberOfNeurons = numberOfNeurons;
@@ -84,17 +90,28 @@ public class ANN_Layer
         }
     }
 
-    public float Sigmoide(float x)
-    {
+    //----------------------------------------------------------------------------------------------------
+    #region MathFunctions
+
+    public float Sigmoide(float x) {
         return 1.0f / (1 + Mathf.Exp(-x));
     }
 
-    public void DebugInfo()
+    public float SigmoideDerived(float x) {
+        return Mathf.Exp(-x) / Mathf.Pow(1 + Mathf.Exp(-x), 2);
+    }
+
+    #endregion
+    //----------------------------------------------------------------------------------------------------
+    #region DebugUtility
+
+    public string String()
     {
         //string parent = m_parentLayer.m_layerName;
         string parent;
         string child;
-
+        string weight = "";
+        string bias = "";
         if (m_parentLayer != null)
         {
             parent = m_parentLayer.m_layerName.ToString();
@@ -104,10 +121,12 @@ public class ANN_Layer
         if (m_childLayer != null)
         {
             child = m_childLayer.m_layerName.ToString();
+            weight = ArrayBiToTable(m_weight);
+            bias = ArrayToTable(m_bias);
 
         }
 
-        Debug.Log(
+        string info =
             "Name: " + m_layerName + "\n" +
 
             "ParentNum: " + m_numberOfParentNeurons +
@@ -115,9 +134,35 @@ public class ANN_Layer
             " ChildNum " + m_numberOfChildNeurons + "\n" +
 
             "Parent: " + m_parentLayer + " Child: " + m_childLayer + "\n" +
-            "Weight: " + m_weight + "\n" +
-            "Bias: " + m_bias
-            );
+            "Weight: " + "\n" + weight + "\n" +
+            "Bias: " + "\n" + bias
+            ;
 
+        return info;
     }
+
+    string ArrayToTable(float[] array) {
+        string table = "";
+        for (int i = 0; i < array.Length; i++) {
+            table += array[i] + " // ";
+        }
+        return table;
+    }
+
+    string ArrayBiToTable(float[,] array) {
+        string table = "";
+
+        for (int i = 0; i < array.GetLength(0); i++) {
+            table += "row " + i + " ";
+            for (int j = 0; j < array.GetLength(1); j++) {
+                table += "col" + i + " " + array[i, j] + " // ";
+            }
+            table += "\n";
+        }
+
+        return table;
+    }
+
+    #endregion
+    //----------------------------------------------------------------------------------------------------
 }
