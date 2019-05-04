@@ -4,31 +4,22 @@ using UnityEngine;
 
 public class ANN_NeuralNetwork : MonoBehaviour
 {
-    // Start is called before the first frame update
-
-    public ANN_Layer m_Input , m_Hide, m_Output;
+    public ANN_Layer m_input , m_hide, m_output;
 
     void Start()
     {
-        m_Input = new ANN_Layer(3,"Input");
-        m_Hide = new ANN_Layer(5, "Hide");
-        m_Output = new ANN_Layer(1, "Output");
+        m_input = new ANN_Layer(3,"Input");
+        m_hide = new ANN_Layer(5, "Hide");
+        m_output = new ANN_Layer(1, "Output");
 
-        m_Input.AddRelations(null, m_Hide);
-        m_Hide.AddRelations(m_Input, m_Output);
-        m_Output.AddRelations(m_Hide,null);
+        m_input.AddRelations(null, m_hide);
+        m_hide.AddRelations(m_input, m_output);
+        m_output.AddRelations(m_hide,null);
 
-        m_Input.DebugInfo();
-        m_Hide.DebugInfo();
-        m_Output.DebugInfo();
+        m_input.DebugInfo();
+        m_hide.DebugInfo();
+        m_output.DebugInfo();
 
-        Debug.Log(m_Hide.m_parentLayer.m_layerName);
+        Debug.Log(m_hide.m_parentLayer.m_layerName);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
 }
