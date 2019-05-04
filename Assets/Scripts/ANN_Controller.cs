@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class ANN_Controller : MonoBehaviour
 {
-    // Start is called before the first frame update
+    ArtificialNeuralNetwork m_neuralNetwork;
+
     void Start()
     {
-        
+        m_neuralNetwork.Initialize();
     }
 
-    // Update is called once per frame
     void Update()
     {
         
