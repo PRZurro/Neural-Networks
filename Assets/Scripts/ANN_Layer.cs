@@ -15,7 +15,7 @@ public class ANN_Layer
     public float[] m_desiredValues;
     public float[] m_neuronValues;
 
-    public float[,] m_weightsIncrease;   
+    public float[,] m_weightsIncrease;
     public float[] m_biasValues;
 
 
@@ -54,9 +54,11 @@ public class ANN_Layer
     {
         if (m_childLayer != null)
         {
-            for (int j = 0; j < m_numberOfChildNeurons; j++) {
+            for (int j = 0; j < m_numberOfChildNeurons; j++)
+            {
                 m_biasWeight[j] = Random.Range(-1f, 1f);
-                for (int i = 0; i < m_numberOfNeurons; i++) {
+                for (int i = 0; i < m_numberOfNeurons; i++)
+                {
                     m_weight[i, j] = Random.Range(-1f, 1f);
                 }
             }
@@ -88,22 +90,28 @@ public class ANN_Layer
         }
     }
 
-    public void ObtainErrors() {
+    public void ObtainErrors()
+    {
         // if is Output Layer
-        if (m_childLayer == null) {            
-                CalculateOutputError();         
+        if (m_childLayer == null)
+        {
+            CalculateOutputError();
         }
         //if is Hide Layer
-        else if (m_parentLayer != null) {
+        else if (m_parentLayer != null)
+        {
             CalculateHideError();
         }
     }
 
-    public void AdjustWeight() {
+    public void AdjustWeight()
+    {
         //If Input or Hide
-        if (m_childLayer != null) {
-            
-            switch (Const.USE_MOMENTUM){
+        if (m_childLayer != null)
+        {
+
+            switch (Const.USE_MOMENTUM)
+            {
                 case false:
                     FitErrorWeight(Const.LEARNING_RATIO);
                     break;
@@ -119,18 +127,22 @@ public class ANN_Layer
     //----------------------------------------------------------------------------------------------------
     #region MathFunctions
 
-    float Sigmoide(float x) {
+    float Sigmoide(float x)
+    {
         return 1.0f / (1 + Mathf.Exp(-x));
     }
 
-    float SigmoideDerived(float x) {
+    float SigmoideDerived(float x)
+    {
         return Mathf.Exp(-x) / Mathf.Pow(1 + Mathf.Exp(-x), 2);
     }
 
     // Apuntes --> Computar el Error(1) 
-    public float ECM_ErrorCuadraticMedium() {
+    public float ECM_ErrorCuadraticMedium()
+    {
         float error = 0;
-        for (int i = 0; i < m_numberOfNeurons; i++) {
+        for (int i = 0; i < m_numberOfNeurons; i++)
+        {
             error += Mathf.Pow(m_neuronValues[i] - m_desiredValues[i], 2);
         }
         error /= m_numberOfNeurons;
@@ -138,34 +150,45 @@ public class ANN_Layer
     }
 
     // Apuntes --> Computar el Error(3) --> Derivada del output
-    void CalculateOutputError() {
-        for (int i = 0; i < m_numberOfNeurons; i++) {
+    void CalculateOutputError()
+    {
+        for (int i = 0; i < m_numberOfNeurons; i++)
+        {
             m_errors[i] = (m_desiredValues[i] - m_neuronValues[i]) * m_neuronValues[i] * (1 - m_neuronValues[i]);
         }
     }
 
     // Apuntes --> Computar el Error(4) --> Derivada de la capa oculta.
-    void CalculateHideError() {
-        for (int i = 0; i < m_numberOfNeurons; i++) {
+    void CalculateHideError()
+    {
+        for (int i = 0; i < m_numberOfNeurons; i++)
+        {
             float suma = 0;
-            for (int j = 0; j < m_numberOfChildNeurons; j++) {
+            for (int j = 0; j < m_numberOfChildNeurons; j++)
+            {
                 suma += m_childLayer.m_errors[j] * m_weight[i, j];
             }
             m_errors[i] = suma * m_neuronValues[i] * (1 - m_neuronValues[i]);
         }
     }
 
-    void FitErrorWeight(float learningRatio) {
-        for (int i = 0; i < m_numberOfNeurons; i++) {
-            for (int j = 0; j < m_numberOfChildNeurons; j++) {
+    void FitErrorWeight(float learningRatio)
+    {
+        for (int i = 0; i < m_numberOfNeurons; i++)
+        {
+            for (int j = 0; j < m_numberOfChildNeurons; j++)
+            {
                 m_weight[i, j] += learningRatio * m_childLayer.m_errors[i] * m_neuronValues[i];
             }
-        }       
+        }
     }
 
-    void FitErrorWeightWithMomentum(float learningRatio, float momentumRatio) {
-        for (int i = 0; i < m_numberOfNeurons; i++) {
-            for (int j = 0; j < m_numberOfChildNeurons; j++) {
+    void FitErrorWeightWithMomentum(float learningRatio, float momentumRatio)
+    {
+        for (int i = 0; i < m_numberOfNeurons; i++)
+        {
+            for (int j = 0; j < m_numberOfChildNeurons; j++)
+            {
                 float dw = learningRatio * m_childLayer.m_errors[j] * m_neuronValues[j];
                 m_weight[i, j] += dw + momentumRatio * m_weightsIncrease[i, j];
                 m_weightsIncrease[i, j] = dw;
@@ -173,9 +196,11 @@ public class ANN_Layer
         }
     }
 
-    void FitErrorBias(float learningRatio) {
-        for (int i = 0; i < m_numberOfChildNeurons; i++) {
-            m_biasWeight[i] += learningRatio* m_childLayer.m_errors[i] * m_biasValues[i];
+    void FitErrorBias(float learningRatio)
+    {
+        for (int i = 0; i < m_numberOfChildNeurons; i++)
+        {
+            m_biasWeight[i] += learningRatio * m_childLayer.m_errors[i] * m_biasValues[i];
         }
     }
 
@@ -211,12 +236,12 @@ public class ANN_Layer
         }
 
         string info =
-            "Name: " + m_layerName + "\n" +                    
+            "Name: " + m_layerName + "\n" +
 
             "Parent: " + parent + " have " + m_numberOfParentNeurons + " neuron" +
-            " ==> This have " + m_numberOfNeurons + " neuron" + 
+            " ==> This have " + m_numberOfNeurons + " neuron" +
             " ==> Child: " + child + " have " + m_numberOfChildNeurons + " neuron" + "\n" +
-                        
+
             "Weight: " + "\n" + weight + "\n" +
             "Weight Increase: " + "\n" + weightIncrease + "\n" +
             "Desired: " + "\n" + desired + "\n" +
@@ -226,25 +251,30 @@ public class ANN_Layer
             "Desire Values: " + "\n" + ArrayToTable(m_desiredValues) + "\n" +
             "Neuron Values: " + "\n" + ArrayToTable(m_neuronValues) + "\n"
             ;
-        
+
 
         return info;
     }
 
-    string ArrayToTable(float[] array) {
+    string ArrayToTable(float[] array)
+    {
         string table = "";
-        for (int i = 0; i < array.Length; i++) {
+        for (int i = 0; i < array.Length; i++)
+        {
             table += array[i] + " // ";
         }
         return table;
     }
 
-    string ArrayBiToTable(float[,] array) {
+    string ArrayBiToTable(float[,] array)
+    {
         string table = "";
 
-        for (int i = 0; i < array.GetLength(0); i++) {
+        for (int i = 0; i < array.GetLength(0); i++)
+        {
             table += "row " + i + " ";
-            for (int j = 0; j < array.GetLength(1); j++) {
+            for (int j = 0; j < array.GetLength(1); j++)
+            {
                 table += "col" + i + " " + array[i, j] + " // ";
             }
             table += "\n";

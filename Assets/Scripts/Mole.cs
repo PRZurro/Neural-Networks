@@ -23,6 +23,8 @@ public class Mole : MonoBehaviour
     bool m_isShiny;
     bool m_isHidden;
 
+    ANN_MoleInput m_moleInput;
+
     void Awake()
     {
         m_accumulatedProbabilities = new List<int>();
@@ -52,14 +54,15 @@ public class Mole : MonoBehaviour
     /// <param name="id"></param>
     /// <param name="onHide">Delegate to call when this mole is hidding</param>
     /// <param name="defaultSettings">default mole settings</param>
-    public void Initialize(byte id, Communication onHide, MoleSettings defaultSettings, List<MoleSettings> moleSettings, List<int> settingsProbabilities)
+    public void Initialize(byte id, Communication onHide, MoleSettings defaultSettings, List<MoleSettings> moleSettings, List<int> settingsProbabilities, Vector3 hammerPosition)
     {
         ID = id;
         OnHide = onHide;
         SetSettings(GetRandomSettings(moleSettings, settingsProbabilities));
         ResetTimerToHide();
         m_isHidden = true;
-    
+
+        m_moleInput = new ANN_MoleInput(m_isShiny, m_isHidden, Vector3.Distance(hammerPosition, m_position), m_settings.moleType);
     }
 
     /// <summary>
@@ -187,6 +190,11 @@ public class Mole : MonoBehaviour
         m_curTimer = m_settings.timeToHide;
     }
 
+    public void RefreshMoleInputsForANN(Vector3 hammerPosition)
+    {
+        m_moleInput.Set(m_isShiny, m_isHidden, Vector3.Distance(hammerPosition, m_position), m_settings.moleType);
+    }
+
     ///////////////////////////--GETTERS--////////////////////////////
 
     /// <summary>
@@ -219,6 +227,11 @@ public class Mole : MonoBehaviour
     public bool isHidden() {
 
         return m_isHidden;
+    }
+
+    public ANN_MoleInput inputForANN()
+    {
+        return m_moleInput;
     }
     
 }
