@@ -4,6 +4,30 @@ using UnityEngine;
 
 public class ANN_Controller : MonoBehaviour
 {
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    void Update()
+    {
+        float[] scene = WAM.GetComponent<WhackAMoleManager>().GetSceneState();     
+        state = AI.AskAction(scene);
+        Debug.Log(scene[0] + " " + scene[1] + " " + scene[2] + " " + scene[3] + " " + scene[4] + " " + scene[5] + " " + scene[6]);
+        //WAM.GetComponent<WhackAMoleManager>().HitIDMole(state);
+
+    }
+
+
+
+    void ShowLayers() {
+        Debug.ClearDeveloperConsole();
+        AI.ShowLayers();
+    }
+}
+
+{
 
     [SerializeField]
     GameObject m_hammer;
@@ -141,31 +165,10 @@ public class ANN_Controller : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
-    {
         //Debug.Log(m_inputTraining.GetLength(1));    
 
         //AI.ShowLayers();
         AI.FitNetwork(m_inputTraining, m_desire, 5000, 0.05f);
         ShowLayers();
 
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        float[] scene = WAM.GetComponent<WhackAMoleManager>().GetSceneState();     
-        state = AI.AskAction(scene);
-        Debug.Log(scene[0] + " " + scene[1] + " " + scene[2] + " " + scene[3] + " " + scene[4] + " " + scene[5] + " " + scene[6]);
-        //WAM.GetComponent<WhackAMoleManager>().HitIDMole(state);
-
-    }
-
-
-
-    void ShowLayers() {
-        Debug.ClearDeveloperConsole();
-        AI.ShowLayers();
-    }
-}
+
