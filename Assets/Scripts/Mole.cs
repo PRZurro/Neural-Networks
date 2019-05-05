@@ -11,7 +11,7 @@ public class Mole : MonoBehaviour
     public byte ID { get; set; }
 
     MoleSettings m_settings;
-    Vector3 m_position; // Hammer movement target
+    public Vector3 m_position; // Hammer movement target
 
     Animator m_anim;
 
@@ -20,6 +20,7 @@ public class Mole : MonoBehaviour
     float m_curTime, m_curTimer;
     int m_score;
 
+    bool m_isShiny;
     bool m_isHidden;
 
     void Awake()
@@ -51,14 +52,14 @@ public class Mole : MonoBehaviour
     /// <param name="id"></param>
     /// <param name="onHide">Delegate to call when this mole is hidding</param>
     /// <param name="defaultSettings">default mole settings</param>
-    public void Initialize(byte id, Communication onHide, MoleSettings defaultSettings)
+    public void Initialize(byte id, Communication onHide, MoleSettings defaultSettings, List<MoleSettings> moleSettings, List<int> settingsProbabilities)
     {
         ID = id;
         OnHide = onHide;
-        m_settings = defaultSettings;
+        SetSettings(GetRandomSettings(moleSettings, settingsProbabilities));
         ResetTimerToHide();
         m_isHidden = true;
-        m_score = m_settings.score;
+    
     }
 
     /// <summary>
@@ -83,35 +84,9 @@ public class Mole : MonoBehaviour
     /// <param name="settingsProbabilities">list of probabilities of each element in the settings list</param>
     public void Unhide(List<MoleSettings> settingsList, List<int> settingsProbabilities)
     {
-        m_isHidden = false;
-        
-        // Fill the accumulated probabilities sequence if the input list does not have the same elements number
-        if (settingsProbabilities.Count != m_accumulatedProbabilities.Count)
-        {
-            FillAccumulatedSequenceIn(settingsProbabilities, m_accumulatedProbabilities);
-        }
-
-        // Get a random MoleSettings objects in the settings list by each element probability
-
-        int maxProbability = m_accumulatedProbabilities[m_accumulatedProbabilities.Count - 1];
-        int nRandom = Random.Range(0, maxProbability);
-        int previousAccumulatedProbability = 0, currentIndex = 0;
-
-        foreach (int accumulatedProbability in m_accumulatedProbabilities)
-        {
-            if (nRandom >= previousAccumulatedProbability && nRandom <= accumulatedProbability)
-            {
-                break;
-            }
-            else
-            {
-                previousAccumulatedProbability = accumulatedProbability;
-            }
-
-            currentIndex++;
-        }
-
-        SetSettings(settingsList[currentIndex]);
+        m_isHidden = false;   
+               
+        SetSettings(GetRandomSettings(settingsList,settingsProbabilities));
 
         // Set the animator state and reset timers
         m_anim.SetBool("isHidden", false);
@@ -140,14 +115,43 @@ public class Mole : MonoBehaviour
 
             if (Random.Range(0.0f, 1.0f) <= m_settings.shinyProbability)
             {
+                m_isShiny = true;
                 transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = m_shinyMaterial;
                 m_score = (int)(m_score * GameSettings.shinyMultiplier);
             }
             else
             {
+                m_isShiny = false;
                 transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().material = m_normalMaterial;
             }
         }
+    }
+
+    MoleSettings GetRandomSettings(List<MoleSettings> moleSettings, List<int> settingsProbabilities) {
+        
+        // Fill the accumulated probabilities sequence if the input list does not have the same elements number
+        if (settingsProbabilities.Count != m_accumulatedProbabilities.Count) {
+            FillAccumulatedSequenceIn(settingsProbabilities, m_accumulatedProbabilities);
+        }
+
+        // Get a random MoleSettings objects in the settings list by each element probability
+
+        int maxProbability = m_accumulatedProbabilities[m_accumulatedProbabilities.Count - 1];
+        int nRandom = Random.Range(0, maxProbability);
+        int previousAccumulatedProbability = 0, currentIndex = 0;
+
+        foreach (int accumulatedProbability in m_accumulatedProbabilities) {
+            if (nRandom >= previousAccumulatedProbability && nRandom <= accumulatedProbability) {
+                break;
+            }
+            else {
+                previousAccumulatedProbability = accumulatedProbability;
+            }
+
+            currentIndex++;
+        }
+
+        return moleSettings[currentIndex];
     }
 
     /// <summary>
@@ -202,4 +206,19 @@ public class Mole : MonoBehaviour
     {
         return m_score;
     }
+
+    public MoleType GetMoleType() {
+        return m_settings.moleType;
+    }
+
+    public bool isShiny() {
+
+        return m_isShiny;
+    }
+
+    public bool isHidden() {
+
+        return m_isHidden;
+    }
+    
 }

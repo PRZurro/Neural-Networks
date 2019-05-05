@@ -16,37 +16,36 @@ MonoBehaviour:
   - moleType: 0
     score: 25
     shinyProbability: 0.2
-    timeToHide: 17
+    timeToHide: 10
   - moleType: 1
     score: 50
     shinyProbability: 0.2
-    timeToHide: 15
+    timeToHide: 9
   - moleType: 2
     score: 100
     shinyProbability: 0.2
-    timeToHide: 13
+    timeToHide: 8
   - moleType: 3
     score: 150
     shinyProbability: 0.2
-    timeToHide: 11
+    timeToHide: 7
   - moleType: 4
     score: 200
     shinyProbability: 0.2
-    timeToHide: 9
+    timeToHide: 6
   - moleType: 5
     score: 250
     shinyProbability: 0.2
-    timeToHide: 7
+    timeToHide: 5
   - moleType: 6
     score: 350
     shinyProbability: 0.2
-    timeToHide: 5
+    timeToHide: 4
   - moleType: 7
     score: 450
     shinyProbability: 0.2
     timeToHide: 3
   moleSettingsProbabilities: 28000000140000000a0000000a0000000a000000060000000400000002000000
-  shinyMultiplier: 2
   hammerSpeed: 2.3
   minAppearanceTime: 0.12
   maxAppearanceTime: 0.35

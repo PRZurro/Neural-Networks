@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Hammer : MonoBehaviour
 {
+    [SerializeField]
+    bool isIA;
+
     Animator m_anim;
     bool m_isMoving;
     Vector3 m_target;

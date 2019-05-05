@@ -5,11 +5,11 @@ using UnityEngine;
 public class ANN_Layer
 {
     string m_layerName;
-    int m_numberOfParentNeurons, m_numberOfNeurons, m_numberOfChildNeurons;
+    public int m_numberOfParentNeurons, m_numberOfNeurons, m_numberOfChildNeurons;
     public ANN_Layer m_childLayer, m_parentLayer;
 
     public float[,] m_weight;
-    public float[] m_bias;
+    public float[] m_biasWeight;
 
     public float[] m_errors;
     public float[] m_desiredValues;
@@ -18,11 +18,6 @@ public class ANN_Layer
     public float[,] m_weightsIncrease;   
     public float[] m_biasValues;
 
-    //public float[,] pesosIncremento;
-    //public float[] valoresNeuronas;
-    //public float[] valoresDeseados;
-    //public float[] errores;
-    //public float[] biasValores;
 
     public ANN_Layer(int numberOfNeurons, string layerName)
     {
@@ -48,7 +43,9 @@ public class ANN_Layer
             m_childLayer = child;
             m_numberOfChildNeurons = child.m_numberOfNeurons;
             m_weight = new float[m_numberOfNeurons, m_numberOfChildNeurons];
-            m_bias = new float[m_numberOfNeurons];
+            m_weightsIncrease = new float[m_numberOfNeurons, m_numberOfChildNeurons];
+            m_biasWeight = new float[m_numberOfChildNeurons];
+            m_biasValues = new float[m_numberOfChildNeurons];
         }
 
     }
@@ -57,16 +54,11 @@ public class ANN_Layer
     {
         if (m_childLayer != null)
         {
-            for (int j = 0; j < m_numberOfChildNeurons; j++)
-            {
-
-                m_bias[j] = Random.Range(-1f, 1f);
-
-                for (int i = 0; i < m_numberOfNeurons; i++)
-                {
-                    m_weight[j, i] = Random.Range(-1f, 1f);
+            for (int j = 0; j < m_numberOfChildNeurons; j++) {
+                m_biasWeight[j] = Random.Range(-1f, 1f);
+                for (int i = 0; i < m_numberOfNeurons; i++) {
+                    m_weight[i, j] = Random.Range(-1f, 1f);
                 }
-
             }
         }
     }
@@ -82,7 +74,7 @@ public class ANN_Layer
                 {
                     x += m_parentLayer.m_neuronValues[i] * m_parentLayer.m_weight[i, j];
                 }
-                x += m_parentLayer.m_biasValues[j] * m_parentLayer.m_bias[j];
+                x += m_parentLayer.m_biasValues[j] * m_parentLayer.m_biasWeight[j];
 
                 if (m_childLayer == null && Const.OUTPUT_LINEAL)
                 {
@@ -110,24 +102,16 @@ public class ANN_Layer
     public void AdjustWeight() {
         //If Input or Hide
         if (m_childLayer != null) {
-            for (int i = 0; i < m_numberOfNeurons; i++) {
-                for (int j = 0; j < m_numberOfChildNeurons; j++) {
-                    // Formula de ajuste de peso
-                    float dw = Const.RATIO_APRENDIZAJE * m_childLayer.m_errors[j] * m_neuronValues[j]; 
-
-                    if (Const.USO_INERCIA) {
-                        m_weight[i, j] += dw + Const.RATIO_INERCIA * m_weightsIncrease[i, j];
-                        m_weightsIncrease[i, j] = dw;
-                    }
-                    else {
-                        m_weight[i, j] += dw;
-                    }
-                }
+            
+            switch (Const.USE_MOMENTUM){
+                case false:
+                    FitErrorWeight(Const.LEARNING_RATIO);
+                    break;
+                case true:
+                    FitErrorWeightWithMomentum(Const.LEARNING_RATIO, Const.MOMENTUM_RATIO);
+                    break;
             }
-            for (int j = 0; j < m_numberOfChildNeurons; j++) {
-                float dw = Const.RATIO_APRENDIZAJE * m_childLayer.m_errors[j] * m_biasValues[j];
-                m_bias[j] += dw;
-            }
+            FitErrorBias(Const.RATIO_APRENDIZAJE);
         }
     }
 
@@ -144,8 +128,13 @@ public class ANN_Layer
     }
 
     // Apuntes --> Computar el Error(1) 
-    float ECM_ErrorCuadraticMedium() {
-        return 5.0f;
+    public float ECM_ErrorCuadraticMedium() {
+        float error = 0;
+        for (int i = 0; i < m_numberOfNeurons; i++) {
+            error += Mathf.Pow(m_neuronValues[i] - m_desiredValues[i], 2);
+        }
+        error /= m_numberOfNeurons;
+        return error;
     }
 
     // Apuntes --> Computar el Error(3) --> Derivada del output
@@ -166,6 +155,30 @@ public class ANN_Layer
         }
     }
 
+    void FitErrorWeight(float learningRatio) {
+        for (int i = 0; i < m_numberOfNeurons; i++) {
+            for (int j = 0; j < m_numberOfChildNeurons; j++) {
+                m_weight[i, j] += learningRatio * m_childLayer.m_errors[i] * m_neuronValues[i];
+            }
+        }       
+    }
+
+    void FitErrorWeightWithMomentum(float learningRatio, float momentumRatio) {
+        for (int i = 0; i < m_numberOfNeurons; i++) {
+            for (int j = 0; j < m_numberOfChildNeurons; j++) {
+                float dw = learningRatio * m_childLayer.m_errors[j] * m_neuronValues[j];
+                m_weight[i, j] += dw + momentumRatio * m_weightsIncrease[i, j];
+                m_weightsIncrease[i, j] = dw;
+            }
+        }
+    }
+
+    void FitErrorBias(float learningRatio) {
+        for (int i = 0; i < m_numberOfChildNeurons; i++) {
+            m_biasWeight[i] += learningRatio* m_childLayer.m_errors[i] * m_biasValues[i];
+        }
+    }
+
     #endregion
     //----------------------------------------------------------------------------------------------------
     #region DebugUtility
@@ -173,35 +186,47 @@ public class ANN_Layer
     public string String()
     {
         //string parent = m_parentLayer.m_layerName;
-        string parent;
-        string child;
-        string weight = "";
-        string bias = "";
+        string parent = "NULL";
+        string child = "NULL";
+        string weight = "NULL";
+        string weightIncrease = "NULL";
+        string desired = "NULL";
+        string biasWeight = "NULL";
+        string biasValues = "NULL";
+
         if (m_parentLayer != null)
         {
-            parent = m_parentLayer.m_layerName.ToString();
+            parent = m_parentLayer.m_layerName;
 
         }
 
         if (m_childLayer != null)
         {
-            child = m_childLayer.m_layerName.ToString();
+            child = m_childLayer.m_layerName;
             weight = ArrayBiToTable(m_weight);
-            bias = ArrayToTable(m_bias);
-
+            weightIncrease = ArrayBiToTable(m_weightsIncrease);
+            desired = ArrayToTable(m_desiredValues);
+            biasWeight = ArrayToTable(m_biasWeight);
+            biasValues = ArrayToTable(m_biasValues);
         }
 
         string info =
-            "Name: " + m_layerName + "\n" +
+            "Name: " + m_layerName + "\n" +                    
 
-            "ParentNum: " + m_numberOfParentNeurons +
-            " NeuronNum " + m_numberOfNeurons +
-            " ChildNum " + m_numberOfChildNeurons + "\n" +
-
-            "Parent: " + m_parentLayer + " Child: " + m_childLayer + "\n" +
+            "Parent: " + parent + " have " + m_numberOfParentNeurons + " neuron" +
+            " ==> This have " + m_numberOfNeurons + " neuron" + 
+            " ==> Child: " + child + " have " + m_numberOfChildNeurons + " neuron" + "\n" +
+                        
             "Weight: " + "\n" + weight + "\n" +
-            "Bias: " + "\n" + bias
+            "Weight Increase: " + "\n" + weightIncrease + "\n" +
+            "Desired: " + "\n" + desired + "\n" +
+            "Bias Weight: " + "\n" + biasWeight + "\n" +
+            "Bias Values: " + "\n" + biasValues + "\n" +
+            "Errors: " + "\n" + ArrayToTable(m_errors) + "\n" +
+            "Desire Values: " + "\n" + ArrayToTable(m_desiredValues) + "\n" +
+            "Neuron Values: " + "\n" + ArrayToTable(m_neuronValues) + "\n"
             ;
+        
 
         return info;
     }

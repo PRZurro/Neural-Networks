@@ -20,6 +20,12 @@ public class WhackAMoleManager : MonoBehaviour
     [SerializeField]
     Text m_scoreText;
 
+    [SerializeField]
+    bool m_manualTraining;
+
+    private string m_AIInputParameters = "";
+    private string m_AIOutputParameters = "";
+
     List<Mole> m_moles;
     List<byte> m_hiddenMoles;
     List<byte> m_unhiddenMoles;
@@ -55,7 +61,7 @@ public class WhackAMoleManager : MonoBehaviour
         foreach (Transform moleTr in molesParent)
         {
             m_moles.Add(moleTr.GetComponent<Mole>());
-            m_moles[i].Initialize(i, GetHidingMole, m_gameSettings.moleSettings[0]);
+            m_moles[i].Initialize(i, GetHidingMole, m_gameSettings.moleSettings[0], m_gameSettings.moleSettings,m_gameSettings.moleSettingsProbabilities);
             m_hiddenMoles.Add(i);
 
             i++;
@@ -66,6 +72,14 @@ public class WhackAMoleManager : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Z)) {
+            Debug.Log(m_AIInputParameters);
+            Debug.Log(m_AIOutputParameters);
+            
+        }
+        if (Input.GetKeyDown(KeyCode.Q)) {
+            GetSceneState();
+        }
         m_curTime += Time.deltaTime;
 
         ManageMoleAvailability();
@@ -141,6 +155,7 @@ public class WhackAMoleManager : MonoBehaviour
                     if(mole)
                     {
                         m_hammer.HitOn(mole.position());
+                        manualTraining(mole.ID);
                     }
                     else
                     {
@@ -149,6 +164,7 @@ public class WhackAMoleManager : MonoBehaviour
                         if (mole)
                         {
                             m_hammer.HitOn(mole.position());
+                            manualTraining(mole.ID);
                         }
                     }
                 }
@@ -176,8 +192,7 @@ public class WhackAMoleManager : MonoBehaviour
     void GetHidingMole(byte moleID, bool collision)
     {
         if(collision)
-        {
-            Debug.Log("eeeey");
+        {         
             m_score += m_moles[moleID].score();
             m_scoreText.text = m_score.ToString();
         }
@@ -231,4 +246,47 @@ public class WhackAMoleManager : MonoBehaviour
     {
         return m_moles[moleID];
     }
+
+    void manualTraining(byte ID) {
+        if (m_manualTraining) {
+            ANN_MoleInput m_AnnMoleInput;
+            m_AIInputParameters += "{";
+            m_AIInputParameters += "{";
+            for (int i = 0; i < m_moles.Count; i++) {
+                
+                Mole mole = m_moles[i];
+                m_AnnMoleInput = new ANN_MoleInput(mole.isShiny(), mole.GetMoleType(), Vector3.Distance(m_moles[i].position(), m_hammer.transform.position), mole.isHidden());
+                
+
+                m_AIInputParameters += m_AnnMoleInput.GetString() + ", ";
+            }
+
+            m_AIInputParameters += "}, \n";
+        }
+        m_AIOutputParameters += "{" + ID + "} , " ;
+
+    }
+
+    public float[] GetSceneState() {
+        float[] scenestate = new float[(System.Enum.GetNames(typeof(MoleType)).Length + 3) * m_moles.Count];
+        string str = "";
+        ANN_MoleInput m_AnnMoleInput;
+
+        for (int i = 0; i < m_moles.Count; i++) {
+            Mole mole = m_moles[i];            
+            m_AnnMoleInput = new ANN_MoleInput(mole.isShiny(), mole.GetMoleType(), Vector3.Distance(m_moles[i].position(), m_hammer.transform.position), mole.isHidden());
+            scenestate = m_AnnMoleInput.GetArray();
+
+            str += m_AnnMoleInput.GetString();
+        }
+        //Debug.Log(str);
+        return scenestate;
+    }
+
+    public void HitIDMole(int ID) {
+        if (!m_humanPlayable) {
+            m_hammer.HitOn(m_moles[ID].position());
+        }       
+    }
+
 }
