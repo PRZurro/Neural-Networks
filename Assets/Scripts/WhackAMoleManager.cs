@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WhackAMoleManager : MonoBehaviour
 {
@@ -16,27 +17,31 @@ public class WhackAMoleManager : MonoBehaviour
     [SerializeField]
     bool m_humanPlayable = false;
 
+    [SerializeField]
+    Text m_scoreText;
+
+    [SerializeField]
+    bool m_manualTraining;
+
+    ANN_Controller m_ANN_Controller;
+
     List<Mole> m_moles;
     List<byte> m_hiddenMoles;
     List<byte> m_unhiddenMoles;
+
+    
 
     int m_score;
 
     float m_curTimer;
     float m_curTime;
 
+    private string m_AIInputValues = "";
+    private string m_AIOutputValues = "";
+
     void Awake()
     {
         m_hammer.MovementSpeed = m_gameSettings.hammerSpeed;
-
-        // Set the cameras when this manager is controlled by a human player
-        if(m_humanPlayable)
-        {
-            Camera.main.depth = -90;
-            Camera.main.tag = "Untagged";
-    
-            m_camera.tag = "MainCamera";
-        }
 
         m_moles = new List<Mole>();
         m_hiddenMoles = new List<byte>();
@@ -51,17 +56,43 @@ public class WhackAMoleManager : MonoBehaviour
         foreach (Transform moleTr in molesParent)
         {
             m_moles.Add(moleTr.GetComponent<Mole>());
-            m_moles[i].Initialize(i, GetHidingMole, m_gameSettings.moleSettings[0]);
+            m_moles[i].Initialize(i, GetHidingMole, m_gameSettings.moleSettings[0], m_gameSettings.moleSettings, m_gameSettings.moleSettingsProbabilities, m_hammer.transform.position);
             m_hiddenMoles.Add(i);
 
             i++;
         }
 
+        // Set the cameras when this manager is controlled by a human player
+        if (m_humanPlayable)
+        {
+            Camera.main.depth = -90;
+            Camera.main.tag = "Untagged";
+
+            m_camera.tag = "MainCamera";
+        }
+        else
+        {
+            m_ANN_Controller = new ANN_Controller(m_moles.Count * ANN_MoleInput.INPUTS_SIZE, 10, m_moles.Count + 1);
+        }
+
         ResetTimers();
+
+        if (!m_humanPlayable) // By IA
+        {
+            InvokeRepeating("ManageIAPlayer",3, 0.5f);
+        }
+
+        
     }
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            Debug.Log(m_AIInputValues);
+            Debug.Log(m_AIOutputValues);
+
+        }
         m_curTime += Time.deltaTime;
 
         ManageMoleAvailability();
@@ -92,6 +123,11 @@ public class WhackAMoleManager : MonoBehaviour
     /// </summary>
     void ManageMoleAvailability()
     {
+        foreach (Mole mole in m_moles)
+        {
+            mole.RefreshMoleInputsForANN(m_hammer.transform.position);
+        }
+
         // When timer is reached reset the timers and set the number of available moles randomly
         if (m_curTime >= m_curTimer)
         {
@@ -132,11 +168,12 @@ public class WhackAMoleManager : MonoBehaviour
 
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
                 {
-                    Mole mole =  hit.transform.parent.GetComponent<Mole>();
+                    Mole mole = hit.transform.parent.GetComponent<Mole>();
 
-                    if(mole)
-                    {
+                    if (mole)
+                    {                      
                         m_hammer.HitOn(mole.position());
+                        manualTraining(mole.ID);
                     }
                     else
                     {
@@ -145,11 +182,19 @@ public class WhackAMoleManager : MonoBehaviour
                         if (mole)
                         {
                             m_hammer.HitOn(mole.position());
+                            manualTraining(mole.ID);
                         }
                     }
                 }
             }
         }
+
+    }
+
+    void ManageIAPlayer() 
+    {
+        m_ANN_Controller.UpdateANN(GetSceneState());
+        HitMole((byte)m_ANN_Controller.state());
     }
 
     /// <summary>
@@ -171,15 +216,15 @@ public class WhackAMoleManager : MonoBehaviour
     /// <param name="collision"></param>
     void GetHidingMole(byte moleID, bool collision)
     {
-        if(collision)
+        if (collision)
         {
-            Debug.Log("eeeey");
             m_score += m_moles[moleID].score();
+            m_scoreText.text = m_score.ToString();
         }
 
-        StartCoroutine(MakeMoleAvailable(moleID, 0.5f));
+        StartCoroutine(MakeMoleAvailable(moleID, 0.1f));
     }
-    
+
     /// <summary>
     /// Unhide a mole by id
     /// </summary>
@@ -226,4 +271,79 @@ public class WhackAMoleManager : MonoBehaviour
     {
         return m_moles[moleID];
     }
+
+    void manualTraining(byte ID)
+    {
+        if (m_manualTraining)
+        {
+            m_AIInputValues += "{";
+            //m_AIInputValues += "{";
+            for (int i = 0; i < m_moles.Count; i++)
+            {
+                m_AIInputValues += m_moles[i].inputForANN().ToString() + ", ";
+            }
+
+            m_AIInputValues += "}, \n";
+        }
+        switch (ID) {
+            case 0:
+                m_AIOutputValues += "{1,0,0,0,0,0,0,0} , \n";
+                break;
+            case 1:
+                m_AIOutputValues += "{0,1,0,0,0,0,0,0} , \n";
+                break;
+            case 2:
+                m_AIOutputValues += "{0,0,1,0,0,0,0,0} , \n";
+                break;
+            case 3:
+                m_AIOutputValues += "{0,0,0,1,0,0,0,0} , \n";
+                break;
+            case 4:
+                m_AIOutputValues += "{0,0,0,0,1,0,0,0} , \n";
+                break;
+            case 5:
+                m_AIOutputValues += "{0,0,0,0,0,1,0,0} , \n";
+                break;
+            case 6:
+                m_AIOutputValues += "{0,0,0,0,0,0,1,0} , \n";
+                break;
+            case 7:
+                m_AIOutputValues += "{0,0,0,0,0,0,0,1} , \n";
+                break;
+        }
+       
+
+    }
+
+    public float[] GetSceneState()
+    {
+        int size = 0;
+        foreach(Mole mole in m_moles)
+        {
+            size+= mole.inputForANN().GetArray().Length;
+        }
+
+        float[] sceneState = new float[size];
+
+        for (int i = 0, loadedElements = 0; i < m_moles.Count; i++)
+        {
+            float[] moleInput = m_moles[i].inputForANN().GetArray();
+
+            for (int j = 0; j < moleInput.Length; j++, loadedElements++)
+            {
+                sceneState[loadedElements] = moleInput[j];
+            }
+        }
+
+        return sceneState;
+    }
+
+    public void HitIDMole(int ID)
+    {
+        if (!m_humanPlayable)
+        {
+            m_hammer.HitOn(m_moles[ID].position());
+        }
+    }
+
 }
