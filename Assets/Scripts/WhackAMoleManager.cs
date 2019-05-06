@@ -76,6 +76,13 @@ public class WhackAMoleManager : MonoBehaviour
         }
 
         ResetTimers();
+
+        if (!m_humanPlayable) // By IA
+        {
+            InvokeRepeating("ManageIAPlayer",3, 0.5f);
+        }
+
+        
     }
 
     void Update()
@@ -85,10 +92,6 @@ public class WhackAMoleManager : MonoBehaviour
             Debug.Log(m_AIInputValues);
             Debug.Log(m_AIOutputValues);
 
-        }
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            GetSceneState();
         }
         m_curTime += Time.deltaTime;
 
@@ -168,7 +171,7 @@ public class WhackAMoleManager : MonoBehaviour
                     Mole mole = hit.transform.parent.GetComponent<Mole>();
 
                     if (mole)
-                    {
+                    {                      
                         m_hammer.HitOn(mole.position());
                         manualTraining(mole.ID);
                     }
@@ -185,10 +188,13 @@ public class WhackAMoleManager : MonoBehaviour
                 }
             }
         }
-        else if(!m_humanPlayable) // By IA
-        {
-            m_ANN_Controller.UpdateANN(GetSceneState());
-        }
+
+    }
+
+    void ManageIAPlayer() 
+    {
+        m_ANN_Controller.UpdateANN(GetSceneState());
+        HitMole((byte)m_ANN_Controller.state());
     }
 
     /// <summary>
@@ -216,7 +222,7 @@ public class WhackAMoleManager : MonoBehaviour
             m_scoreText.text = m_score.ToString();
         }
 
-        StartCoroutine(MakeMoleAvailable(moleID, 0.5f));
+        StartCoroutine(MakeMoleAvailable(moleID, 0.1f));
     }
 
     /// <summary>
@@ -271,7 +277,7 @@ public class WhackAMoleManager : MonoBehaviour
         if (m_manualTraining)
         {
             m_AIInputValues += "{";
-            m_AIInputValues += "{";
+            //m_AIInputValues += "{";
             for (int i = 0; i < m_moles.Count; i++)
             {
                 m_AIInputValues += m_moles[i].inputForANN().ToString() + ", ";
@@ -279,7 +285,33 @@ public class WhackAMoleManager : MonoBehaviour
 
             m_AIInputValues += "}, \n";
         }
-        m_AIOutputValues += "{" + ID + "} , ";
+        switch (ID) {
+            case 0:
+                m_AIOutputValues += "{1,0,0,0,0,0,0,0} , \n";
+                break;
+            case 1:
+                m_AIOutputValues += "{0,1,0,0,0,0,0,0} , \n";
+                break;
+            case 2:
+                m_AIOutputValues += "{0,0,1,0,0,0,0,0} , \n";
+                break;
+            case 3:
+                m_AIOutputValues += "{0,0,0,1,0,0,0,0} , \n";
+                break;
+            case 4:
+                m_AIOutputValues += "{0,0,0,0,1,0,0,0} , \n";
+                break;
+            case 5:
+                m_AIOutputValues += "{0,0,0,0,0,1,0,0} , \n";
+                break;
+            case 6:
+                m_AIOutputValues += "{0,0,0,0,0,0,1,0} , \n";
+                break;
+            case 7:
+                m_AIOutputValues += "{0,0,0,0,0,0,0,1} , \n";
+                break;
+        }
+       
 
     }
 

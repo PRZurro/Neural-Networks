@@ -336,7 +336,7 @@ PrefabInstance:
     - target: {fileID: 7179284657509376000, guid: b9b78a8ff2d834b4390f102f88a87d3a,
         type: 3}
       propertyPath: m_humanPlayable
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7179284657509376000, guid: b9b78a8ff2d834b4390f102f88a87d3a,
         type: 3}
@@ -346,7 +346,7 @@ PrefabInstance:
     - target: {fileID: 7179284657509376000, guid: b9b78a8ff2d834b4390f102f88a87d3a,
         type: 3}
       propertyPath: m_manualTraining
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5548926974329245884, guid: b9b78a8ff2d834b4390f102f88a87d3a,
         type: 3}

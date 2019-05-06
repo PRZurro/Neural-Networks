@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ANN_Controller
 {
-    public int state;
+    private int m_state;
 
     private ArtificialNeuralNetwork m_ANN;
 
@@ -18,13 +18,18 @@ public class ANN_Controller
 
     public void UpdateANN(float[] sceneState)
     {
-        state = m_ANN.ObtainAction(sceneState);
-        Debug.Log(state);
+        m_state = m_ANN.ObtainAction(sceneState);
+        Debug.Log(m_state);
     }
 
     void ShowLayers()
     {
         Debug.ClearDeveloperConsole();
         m_ANN.ShowLayers();
+    }
+
+    public int state() 
+    {
+        return m_state;
     }
 }
